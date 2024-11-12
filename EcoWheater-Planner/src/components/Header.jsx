@@ -1,26 +1,62 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { FaCloudSun } from "react-icons/fa"; // Ikon cuaca dari Font Awesome
 
 function Header() {
+  const location = useLocation();
+
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
-      <a className="btn btn-ghost text-xl">Eco Wheater planner</a>
+        {/* Tambahkan ikon cuaca di samping teks logo */}
+        <a className="btn btn-ghost text-xl flex items-center space-x-2">
+          <FaCloudSun className="text-blue-500" /> {/* Ikon cuaca */}
+          <span>Eco Weather Planner</span>
+        </a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <a>Home</a>
+            <Link
+              to="/"
+              className={`${
+                location.pathname === "/"
+                  ? "font-medium bg-blue-500 text-white"
+                  : ""
+              } hover:bg-blue-400 hover:text-white px-6 py-4 rounded`}
+            >
+              Home
+            </Link>
           </li>
           <li>
-            <a>Activity Planner</a>
+            <Link
+              to="/activityplanner"
+              className={`${
+                location.pathname === "/activityplanner"
+                  ? "font-medium bg-blue-500 text-white"
+                  : ""
+              } hover:bg-blue-400 hover:text-white px-6 py-4 rounded`}
+            >
+              Activity Planner
+            </Link>
           </li>
           <li>
-            <a>WeatherBot</a>
+            <Link
+              to="/energy-tracker"
+              className="font-medium hover:bg-blue-400 hover:text-white px-6 py-4 rounded"
+            >
+              Energy Tracker
+            </Link>
           </li>
         </ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Login</a>
+        <Link
+          to="/login"
+          className="btn text-white bg-blue-500 hover:bg-blue-400 px-6 py-2 rounded "
+        >
+          Login
+        </Link>
       </div>
     </div>
   );

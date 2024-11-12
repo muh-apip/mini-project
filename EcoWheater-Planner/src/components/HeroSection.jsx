@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { fetchWeather } from "../services/weatherService";
-import { FaRegClock } from "react-icons/fa"; // Import clock icon
+import { FaCloudSun } from "react-icons/fa"; // Ikon cuaca dari react-icons
 
 function HeroSection() {
   const [search, setSearch] = useState("");
@@ -10,19 +10,42 @@ function HeroSection() {
 
   // Function to fetch the current time and date
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Removed seconds
-      setCurrentDate(
-        now.toLocaleDateString("en-US", {
+    const savedTime = localStorage.getItem("currentTime");
+    const savedDate = localStorage.getItem("currentDate");
+
+    // Check if there is saved time and date in localStorage, else set new time
+    if (savedTime && savedDate) {
+      setCurrentTime(savedTime);
+      setCurrentDate(savedDate);
+    } else {
+      const interval = setInterval(() => {
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Removed seconds
+        const date = now.toLocaleDateString("en-US", {
           weekday: "long",
           year: "numeric",
           month: "long",
           day: "numeric",
-        })
-      );
-    }, 1000);
-    return () => clearInterval(interval);
+        });
+
+        setCurrentTime(time);
+        setCurrentDate(date);
+
+        // Store the current time and date in localStorage
+        localStorage.setItem("currentTime", time);
+        localStorage.setItem("currentDate", date);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  // Check if weather data is in localStorage when component mounts
+  useEffect(() => {
+    const savedWeather = localStorage.getItem("weatherData");
+    if (savedWeather) {
+      setWeather(JSON.parse(savedWeather)); // Set weather from localStorage if available
+    }
   }, []);
 
   // Function to handle weather search
@@ -31,6 +54,7 @@ function HeroSection() {
       try {
         const result = await fetchWeather(search); // Call fetchWeather from service
         setWeather(result);
+        localStorage.setItem("weatherData", JSON.stringify(result)); // Save fetched weather data in localStorage
         setSearch("");
       } catch (error) {
         console.error("Error during search:", error);
@@ -42,21 +66,23 @@ function HeroSection() {
   return (
     <div className="bg-gradient-to-r from-blue-100 to-blue-300 min-h-screen text-black relative overflow-x-hidden">
       {/* Search Bar */}
-      <div className="absolute top-6 left-6 z-50 w-full px-6 sm:px-12">
-        <div className="flex items-center bg-white rounded-2xl shadow-xl p-4 max-w-full mx-auto transition-all hover:shadow-2xl">
-          <input
-            type="text"
-            placeholder="Enter city/town..."
-            className="px-6 py-3 w-full text-black text-lg rounded-l-2xl focus:outline-none transition-all ease-in-out duration-300 placeholder-gray-500"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button
-            onClick={searchPressed}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-r-2xl hover:opacity-80 transition-all duration-300"
-          >
-            Search
-          </button>
+      <div className="absolute top-6 left-6 z-50 w-full px-4 sm:px-12">
+        <div className="form-control w-full max-w-xs mx-auto sm:max-w-md">
+          <div className="flex input-group w-full">
+            <input
+              type="text"
+              placeholder="Enter city/town..."
+              className="input input-bordered w-full text-black text-lg rounded-l-2xl focus:outline-none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button
+              onClick={searchPressed}
+              className="btn bg-blue-500 text-white ml-4 w-full sm:w-auto rounded-r-2xl"
+            >
+              Search
+            </button>
+          </div>
         </div>
       </div>
 
@@ -77,7 +103,7 @@ function HeroSection() {
           {typeof weather.main !== "undefined" ? (
             <>
               {/* Weather Info Card */}
-              <div className="bg-white text-blue-800 rounded-xl shadow-lg p-6 max-w-lg mx-auto transform hover:scale-105 transition-transform duration-300">
+              <div className="card bg-white text-blue-500 shadow-lg p-6 max-w-lg mx-auto transform hover:scale-105 transition-transform duration-300">
                 {/* Location and Weather Icon */}
                 <div className="space-y-4 text-center">
                   <h1 className="text-4xl font-bold text-shadow-lg">{weather.name}</h1>
