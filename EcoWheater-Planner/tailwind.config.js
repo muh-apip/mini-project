@@ -11,6 +11,6 @@ export default {
     require('daisyui'),
   ],
   daisyui: {
-    themes: ["light"], // Menetapkan tema terang sebagai tema default
+    themes: ["light"], 
   },
 }
