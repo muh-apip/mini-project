@@ -43,7 +43,11 @@ function Header() {
           <li>
             <Link
               to="/energy-tracker"
-              className="font-medium hover:bg-blue-400 hover:text-white px-6 py-4 rounded"
+              className={`${
+                location.pathname === "/energy-tracker"
+                  ? "font-medium bg-blue-500 text-white"
+                  : ""
+              } hover:bg-blue-400 hover:text-white px-6 py-4 rounded`}
             >
               Energy Tracker
             </Link>
