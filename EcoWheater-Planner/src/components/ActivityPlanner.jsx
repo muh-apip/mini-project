@@ -1,67 +1,111 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchActivities, addActivity, deleteActivity, updateActivity } from "../services/activityService"; // Impor fungsi dari service
 
 export default function ActivityPlanner() {
   const [activities, setActivities] = useState([]); // Untuk menyimpan daftar aktivitas
+  const [loading, setLoading] = useState(false); // Untuk status loading
+  const [error, setError] = useState(null); // Untuk menangani error
+  const [isEditing, setIsEditing] = useState(false); // Status apakah sedang mengedit
+  const [editActivity, setEditActivity] = useState(null); // Aktivitas yang sedang diedit
 
-  const handleDelete = (index) => {
-    // Menghapus aktivitas berdasarkan index
-    const updatedActivities = activities.filter((_, i) => i !== index);
-    setActivities(updatedActivities);
+  // Ambil data aktivitas dari API saat komponen pertama kali dimuat
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchActivities();
+        setActivities(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Menambahkan aktivitas baru ke dalam API
+  const handleAddActivity = async (e) => {
+    e.preventDefault();
+    const newActivity = {
+      name: e.target.activityName.value,
+      date: e.target.activityDate.value,
+      weather: e.target.idealWeather.value,
+      duration: e.target.activityDuration.value,
+    };
+
+    try {
+      const addedActivity = await addActivity(newActivity);
+      setActivities([...activities, addedActivity]); // Tambahkan aktivitas baru ke state
+      e.target.reset(); // Reset form setelah submit
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const handleEdit = (index) => {
-    // Menangani proses edit, misalnya dengan memunculkan form pengeditan
-    const activityToEdit = activities[index];
-    console.log("Editing activity:", activityToEdit);
-    // Di sini bisa ditambahkan logika edit aktivitas
+  // Menghapus aktivitas berdasarkan ID dari API
+  const handleDelete = async (id) => {
+    try {
+      await deleteActivity(id);
+      setActivities(activities.filter((activity) => activity.id !== id)); // Menghapus aktivitas dari state
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Menandai aktivitas untuk diedit
+  const handleEdit = (activity) => {
+    setIsEditing(true);
+    setEditActivity(activity); // Set aktivitas yang sedang diedit
+  };
+
+  // Menyimpan perubahan aktivitas yang sudah diedit
+  const handleUpdateActivity = async (e) => {
+    e.preventDefault();
+    const updatedActivity = {
+      name: e.target.activityName.value,
+      date: e.target.activityDate.value,
+      weather: e.target.idealWeather.value,
+      duration: e.target.activityDuration.value,
+    };
+
+    try {
+      const updated = await updateActivity(editActivity.id, updatedActivity); // Mengupdate aktivitas di API
+      setActivities(
+        activities.map((activity) =>
+          activity.id === updated.id ? updated : activity
+        )
+      ); // Update state dengan data yang telah diperbarui
+      setIsEditing(false); // Set ke mode tidak mengedit
+      setEditActivity(null); // Reset data aktivitas yang sedang diedit
+      e.target.reset(); // Reset form setelah update
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
     <div className="flex justify-center items-center flex-col gap-6 p-8">
       {/* Alert Section */}
-      <div role="alert" className="alert shadow-lg w-full max-w-4xl mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="stroke-info h-6 w-6 shrink-0"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <div>
-          <h3 className="font-bold">New message!</h3>
-          <div className="text-xs">You have 1 unread message</div>
+      {error && (
+        <div className="alert alert-error shadow-lg w-full max-w-4xl mb-6">
+          <div>
+            <h3 className="font-bold">Error!</h3>
+            <div>{error}</div>
+          </div>
         </div>
-        <button className="btn btn-sm">See</button>
-      </div>
+      )}
 
       {/* Formulir Perencanaan Aktivitas Luar Ruangan */}
       <div className="w-full max-w-4xl bg-base-200 p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">
-          Rencana Aktivitas
+          {isEditing ? "Edit Rencana Aktivitas" : "Rencana Aktivitas"}
         </h2>
 
         <form
           className="grid grid-cols-1 gap-6"
-          onSubmit={(e) => {
-            e.preventDefault();
-            // Menambahkan aktivitas baru ke dalam state
-            setActivities([
-              ...activities,
-              {
-                name: e.target.activityName.value,
-                date: e.target.activityDate.value,
-                weather: e.target.idealWeather.value,
-                duration: e.target.activityDuration.value,
-              },
-            ]);
-            e.target.reset(); // Reset form setelah submit
-          }}
+          onSubmit={isEditing ? handleUpdateActivity : handleAddActivity}
         >
           <div className="form-control">
             <label className="label text-gray-700">Nama Aktivitas:</label>
@@ -70,6 +114,7 @@ export default function ActivityPlanner() {
               name="activityName"
               className="input input-bordered w-full"
               placeholder="Masukkan nama aktivitas"
+              defaultValue={isEditing ? editActivity.name : ""}
             />
           </div>
 
@@ -79,6 +124,7 @@ export default function ActivityPlanner() {
               type="date"
               name="activityDate"
               className="input input-bordered w-full"
+              defaultValue={isEditing ? editActivity.date : ""}
             />
           </div>
 
@@ -87,6 +133,7 @@ export default function ActivityPlanner() {
             <select
               name="idealWeather"
               className="select select-bordered w-full"
+              defaultValue={isEditing ? editActivity.weather : ""}
             >
               <option value="">Pilih Cuaca Ideal...</option>
               <option value="Sunny">Cerah</option>
@@ -103,12 +150,13 @@ export default function ActivityPlanner() {
               name="activityDuration"
               className="input input-bordered w-full"
               placeholder="Masukkan durasi aktivitas dalam jam"
+              defaultValue={isEditing ? editActivity.duration : ""}
             />
           </div>
 
           <div className="form-control">
             <button type="submit" className="btn bg-blue-500 text-white w-full">
-              Tambahkan Aktivitas
+              {isEditing ? "Update Aktivitas" : "Tambahkan Aktivitas"}
             </button>
           </div>
         </form>
@@ -129,20 +177,26 @@ export default function ActivityPlanner() {
                 <th>Tanggal</th>
                 <th>Cuaca Ideal</th>
                 <th>Durasi</th>
-                <th>Actions</th> {/* Kolom Actions */}
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {activities.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="text-center p-4">
+                    Memuat data...
+                  </td>
+                </tr>
+              ) : activities.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="text-center p-4">
                     Belum ada aktivitas yang ditambahkan
                   </td>
                 </tr>
               ) : (
-                activities.map((activity, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
+                activities.map((activity) => (
+                  <tr key={activity.id}>
+                    <td>{activity.id}</td>
                     <td>{activity.name}</td>
                     <td>{activity.date}</td>
                     <td>{activity.weather}</td>
@@ -150,13 +204,13 @@ export default function ActivityPlanner() {
                     <td>
                       <button
                         className="btn btn-sm btn-primary mr-2"
-                        onClick={() => handleEdit(index)}
+                        onClick={() => handleEdit(activity)} // Memilih aktivitas untuk diedit
                       >
                         Edit
                       </button>
                       <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleDelete(index)}
+                        className="btn btn-sm btn-error"
+                        onClick={() => handleDelete(activity.id)} // Menghapus aktivitas berdasarkan ID
                       >
                         Delete
                       </button>

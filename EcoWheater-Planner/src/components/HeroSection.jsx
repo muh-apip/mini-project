@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { fetchWeather } from "../services/weatherService";
-import { FaCloudSun } from "react-icons/fa"; // Ikon cuaca dari react-icons
+import { FaCloudSun } from "react-icons/fa"; // Icon for weather from react-icons
 
 function HeroSection() {
   const [search, setSearch] = useState("");
@@ -8,36 +8,23 @@ function HeroSection() {
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
 
-  // Function to fetch the current time and date
+  // Function to fetch the current time and date without storing in localStorage
   useEffect(() => {
-    const savedTime = localStorage.getItem("currentTime");
-    const savedDate = localStorage.getItem("currentDate");
+    const interval = setInterval(() => {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Removed seconds
+      const date = now.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
 
-    // Check if there is saved time and date in localStorage, else set new time
-    if (savedTime && savedDate) {
-      setCurrentTime(savedTime);
-      setCurrentDate(savedDate);
-    } else {
-      const interval = setInterval(() => {
-        const now = new Date();
-        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Removed seconds
-        const date = now.toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
+      setCurrentTime(time);
+      setCurrentDate(date);
+    }, 1000);
 
-        setCurrentTime(time);
-        setCurrentDate(date);
-
-        // Store the current time and date in localStorage
-        localStorage.setItem("currentTime", time);
-        localStorage.setItem("currentDate", date);
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
+    return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
 
   // Check if weather data is in localStorage when component mounts
