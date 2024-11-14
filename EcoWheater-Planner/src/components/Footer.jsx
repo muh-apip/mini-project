@@ -4,7 +4,6 @@ import { FaCloudSun } from "react-icons/fa"; // Menggunakan ikon cuaca dari reac
 export default function Footer() {
   return (
     <>
-      <hr className="border-t-2 border-neutral-300 mt-10" /> {/* Garis pembatas */}
       <footer className="footer bg-white text-neutral-600 p-10">
         <aside>
           {/* Ikon cuaca sebagai logo footer */}
