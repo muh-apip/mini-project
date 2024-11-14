@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Cek username dan password (misalnya statik)
     if (username === 'admin' && password === 'password123') {
+      onLogin(); // Memanggil fungsi onLogin untuk mengubah status login
       navigate('/');  
     } else {
       alert('Invalid Username or Password');
@@ -59,13 +59,6 @@ function Login() {
           >
             Log in
           </button>
-
-          <p className="text-sm text-center text-gray-500 mt-4">
-            Don’t have an account?{' '}
-            <a href="#" className="text-blue-500 hover:underline">
-              Sign up
-            </a>
-          </p>
         </form>
       </div>
     </section>
