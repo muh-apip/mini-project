@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import useEnergyStore from '../store/useEnergyStore';
 
 export default function EnergyTracker() {
@@ -10,8 +10,20 @@ export default function EnergyTracker() {
     deleteEnergyUsage,
   } = useEnergyStore();
 
+  const deviceEnergyConsumption = {
+    AC: 1.0, // kWh per hour
+    Lampu: 0.1,
+    Televisi: 0.15,
+    KipasAngin: 0.2,
+    // Add more devices here
+  };
+
   const handleChange = (e) => {
-    setFormData({ [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+      energyConsumption: deviceEnergyConsumption[formData.device] || 0,
+    });
   };
 
   const handleSubmit = (e) => {
@@ -19,9 +31,12 @@ export default function EnergyTracker() {
     addEnergyUsage();
   };
 
-  const totalEnergyConsumption = energyUsage.reduce(
-    (acc, usage) => acc + usage.hoursUsed * usage.energyConsumption,
-    0
+  const totalEnergyConsumption = useMemo(() => 
+    energyUsage.reduce(
+      (acc, usage) => acc + usage.hoursUsed * usage.energyConsumption, 
+      0
+    ), 
+    [energyUsage]
   );
 
   const energyRecommendation = totalEnergyConsumption > 10
@@ -30,7 +45,7 @@ export default function EnergyTracker() {
 
   return (
     <div className="flex flex-col items-center p-8">
-      <h2 className="text-2xl font-semibold mb-6">Daily Energy Tracker</h2>
+      <h2 className="text-2xl font-semibold mb-4">Daily Energy Tracker</h2>
 
       {/* Alert Rekomendasi Penggunaan Energi */}
       <div role="alert" className="alert shadow-lg mb-6 p-4 w-full max-w-2xl">
@@ -53,20 +68,25 @@ export default function EnergyTracker() {
         </div>
       </div>
 
-      {/* Formulir Input Penggunaan Energi dan Daftar Penggunaan Energi */}
+      {/* Formulir Input Penggunaan Energi */}
       <div className="w-full max-w-2xl bg-gray-100 p-6 rounded-lg shadow-lg mb-8">
         <form onSubmit={handleSubmit} className="w-full mb-8">
           <div className="form-control mb-4">
             <label className="label text-sm font-medium mb-1">Nama Perangkat:</label>
-            <input
-              type="text"
+            <select
               name="device"
               className="input input-bordered w-full p-2 text-sm"
-              placeholder="Masukkan perangkat (mis. AC, Lampu)"
               value={formData.device}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="">Pilih perangkat</option>
+              <option value="AC">AC</option>
+              <option value="Lampu">Lampu</option>
+              <option value="Televisi">Televisi</option>
+              <option value="KipasAngin">Kipas Angin</option>
+              {/* Add more devices here */}
+            </select>
           </div>
 
           <div className="form-control mb-4">
@@ -76,6 +96,8 @@ export default function EnergyTracker() {
               name="hoursUsed"
               className="input input-bordered w-full p-2 text-sm"
               placeholder="Masukkan jumlah jam"
+              min="0"
+              max="24"
               value={formData.hoursUsed}
               onChange={handleChange}
               required
@@ -91,11 +113,11 @@ export default function EnergyTracker() {
               placeholder="Masukkan konsumsi energi per jam (kWh)"
               value={formData.energyConsumption}
               onChange={handleChange}
-              required
+              readOnly
             />
           </div>
 
-          <button type="submit" className="btn btn-primary w-full p-2 text-sm">
+          <button type="submit" className="btn bg-blue-500 text-white w-full p-2 text-sm">
             Tambah Penggunaan Energi
           </button>
         </form>
@@ -104,14 +126,14 @@ export default function EnergyTracker() {
         {energyUsage.length === 0 ? (
           <p className="text-center text-sm">Belum ada data penggunaan energi</p>
         ) : (
-          <table className="table-auto w-full text-sm border-collapse">
+          <table className="table table-zebra w-full">
             <thead>
               <tr className="bg-gray-200">
                 <th className="border px-4 py-2 w-10 text-center">No</th>
                 <th className="border px-4 py-2 w-1/4 text-center">Perangkat</th>
                 <th className="border px-4 py-2 w-1/4 text-center">Jam</th>
                 <th className="border px-4 py-2 w-1/4 text-center">Konsumsi Energi (kWh)</th>
-                <th className="border px-4 py-2 w-20 text-center">Aksi</th>
+                <th className="border px-4 py-2 w-1/4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
