@@ -98,11 +98,10 @@ export default function ActivityPlanner() {
       )}
 
       {/* Formulir Perencanaan Aktivitas Luar Ruangan */}
-      <div className="w-full max-w-4xl bg-base-200 p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">
+      <h2 className="text-2xl font-semibold text-gray-700 text-center mb-4">
           {isEditing ? "Edit Rencana Aktivitas" : "Rencana Aktivitas"}
         </h2>
-
+      <div className="w-full max-w-4xl bg-base-200 p-8 rounded-lg shadow-lg">
         <form
           className="grid grid-cols-1 gap-6"
           onSubmit={isEditing ? handleUpdateActivity : handleAddActivity}

@@ -1,38 +1,44 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaCloudSun } from "react-icons/fa";
 
 function Login({ onLogin }) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'password123') {
+    if (email === 'Haviv123@gmail.com' && password === 'password123') {
       onLogin(); // Memanggil fungsi onLogin untuk mengubah status login
       navigate('/');  
     } else {
-      alert('Invalid Username or Password');
+      alert('Invalid Email or Password');
     }
   };
 
   return (
     <section className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="card w-full max-w-md bg-base-100 shadow-xl p-8">
-        <h2 className="text-2xl font-semibold text-center mb-6">Login Page</h2>
+        <div className="flex items-center justify-center mt-6 mb-6">
+          <FaCloudSun className="text-4xl text-blue-500 mr-2" /> 
+          <h2 className="text-2xl font-semibold text-center">Eco Weather Planner</h2>
+        </div>
+
+        
         <form onSubmit={handleSubmit}>
           <div className="form-control mb-4">
-            <label htmlFor="username" className="label">
-              <span className="label-text">Username</span>
+            <label htmlFor="email" className="label">
+              <span className="label-text">Email</span>
             </label>
             <input
-              type="text"
-              name="username"
-              id="username"
-              placeholder="Enter Username"
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Enter Your Email"
               className="input input-bordered w-full"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>

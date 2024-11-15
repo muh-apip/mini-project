@@ -12,7 +12,10 @@ function HeroSection() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Removed seconds
+      const time = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }); // Removed seconds
       const date = now.toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
@@ -55,17 +58,17 @@ function HeroSection() {
       {/* Search Bar */}
       <div className="absolute top-6 left-6 z-50 w-full px-4 sm:px-12">
         <div className="form-control w-full max-w-xs mx-auto sm:max-w-md">
-          <div className="flex input-group w-full">
+          <div className="flex items-center space-x-2 w-full">
             <input
               type="text"
               placeholder="Enter city/town..."
-              className="input input-bordered w-full text-black text-lg rounded-l-2xl focus:outline-none"
+              className="flex-grow input input-bordered text-black text-lg rounded-l-2xl focus:outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <button
               onClick={searchPressed}
-              className="btn bg-blue-500 text-white ml-4 w-full sm:w-auto rounded-r-2xl"
+              className="btn bg-blue-500 text-white px-4 py-2 rounded-r-2xl"
             >
               Search
             </button>
@@ -74,15 +77,18 @@ function HeroSection() {
       </div>
 
       {/* Hero Section */}
-      <section className="flex flex-col sm:flex-row items-center justify-center min-h-screen pt-20 text-center text-black px-6 sm:px-12 space-y-8 sm:space-y-0">
+      <section className="flex flex-col sm:flex-row items-center justify-center min-h-screen pt-16 sm:pt-20 text-center text-black px-4 sm:px-12 space-y-6 sm:space-y-0">
         {/* Left Section: Current Time */}
-        <div className="w-full sm:w-1/3 text-center text-black sm:border-r-2 py-12">
-          <h2 className="text-4xl font-normal mb-8">Current Time</h2>
-          <div className="flex items-center justify-center text-5xl font-bold">
+        <div className="w-full sm:w-1/3 text-center text-black sm:border-r-2 py-6 sm:py-12">
+          <h2 className="text-3xl sm:text-4xl font-normal mb-4 sm:mb-8">
+            Current Time
+          </h2>
+          <div className="flex items-center justify-center text-4xl sm:text-5xl font-bold">
             <p>{currentTime}</p>
           </div>
-          {/* Display Date and Day */}
-          <p className="text-xl mt-2 text-gray-600">{currentDate}</p>
+          <p className="text-base sm:text-xl mt-2 text-gray-600">
+            {currentDate}
+          </p>
         </div>
 
         {/* Right Section: Weather Info */}
@@ -90,37 +96,52 @@ function HeroSection() {
           {typeof weather.main !== "undefined" ? (
             <>
               {/* Weather Info Card */}
-              <div className="card bg-white text-blue-500 shadow-lg p-6 max-w-lg mx-auto transform hover:scale-105 transition-transform duration-300">
+              <div className="card bg-white text-blue-500 shadow-lg p-4 sm:p-6 w-full sm:max-w-md lg:max-w-lg mx-auto transform hover:scale-105 transition-transform duration-300">
                 {/* Location and Weather Icon */}
                 <div className="space-y-4 text-center">
-                  <h1 className="text-4xl font-bold text-shadow-lg">{weather.name}</h1>
+                  <h1 className="text-4xl font-bold text-shadow-lg">
+                    {weather.name}
+                  </h1>
                   <img
                     src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`}
                     alt={weather.weather[0].description}
                     className="w-32 h-32 mx-auto"
                   />
-                  <p className="text-6xl font-light mt-4">{Math.round(weather.main.temp)}°C</p>
-                  <p className="text-xl mt-2 capitalize">{weather.weather[0].description}</p>
+                  <p className="text-6xl font-light mt-4">
+                    {Math.round(weather.main.temp)}°C
+                  </p>
+                  <p className="text-xl mt-2 capitalize">
+                    {weather.weather[0].description}
+                  </p>
                 </div>
 
                 {/* Combined Weather Information */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                   {/* High / Low */}
                   <div className="text-center">
-                    <p className="text-2xl font-semibold">
-                      {Math.round(weather.main.temp_max)}° / {Math.round(weather.main.temp_min)}°
+                    <p className="text-xl sm:text-2xl font-semibold">
+                      {Math.round(weather.main.temp_max)}° /{" "}
+                      {Math.round(weather.main.temp_min)}°
                     </p>
-                    <p className="text-sm text-gray-500">High / Low</p>
+                    <p className="text-sm sm:text-base text-gray-500">
+                      High / Low
+                    </p>
                   </div>
                   {/* Wind */}
                   <div className="text-center">
-                    <p className="text-2xl font-semibold">{weather.wind.speed} m/s</p>
-                    <p className="text-sm text-gray-500">Wind</p>
+                    <p className="text-xl sm:text-2xl font-semibold">
+                      {weather.wind.speed} m/s
+                    </p>
+                    <p className="text-sm sm:text-base text-gray-500">Wind</p>
                   </div>
                   {/* Humidity */}
                   <div className="text-center">
-                    <p className="text-2xl font-semibold">{weather.main.humidity}%</p>
-                    <p className="text-sm text-gray-500">Humidity</p>
+                    <p className="text-xl sm:text-2xl font-semibold">
+                      {weather.main.humidity}%
+                    </p>
+                    <p className="text-sm sm:text-base text-gray-500">
+                      Humidity
+                    </p>
                   </div>
                 </div>
               </div>

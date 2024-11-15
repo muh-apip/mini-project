@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Login from './components/Login';
 import ActivityPlanner from './components/ActivityPlanner';
 import EnergyTracker from './components/EnergyTracker';
+import ChatWheaterBot from './components/ChatWheaterBot';
 
 // ProtectedRoute component for protected routes
 function ProtectedRoute({ isLoggedIn, children }) {
@@ -49,6 +50,11 @@ function App() {
         <Route path="/energytracker" element={
           <ProtectedRoute isLoggedIn={isLoggedIn}>
             <EnergyTracker />
+          </ProtectedRoute>
+        } />
+        <Route path="/chatwheaterbot" element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <ChatWheaterBot />
           </ProtectedRoute>
         } />
       </Routes>
