@@ -32,7 +32,7 @@ const Footer = () => {
         {/* Social Brands */}
         <div className="mt-3 space-x-2">
           <a
-            href="https://github.com/yourusername"
+            href="https://github.com/muh-apip"
             target="_blank"
             rel="noopener noreferrer"
             className="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-500 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
@@ -40,7 +40,7 @@ const Footer = () => {
             <FontAwesomeIcon icon={faGithub} size="lg" />
           </a>
           <a
-            href="https://www.instagram.com/yourusername"
+            href="https://www.instagram.com/mhmmdhaviv"
             target="_blank"
             rel="noopener noreferrer"
             className="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-500 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
