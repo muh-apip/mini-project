@@ -1,5 +1,5 @@
 const api = {
-  key: "8d136b79e496cfafd1abd90a998a996b", // Ganti dengan API Key Anda
+  key: "8d136b79e496cfafd1abd90a998a996b", 
   base: "https://api.openweathermap.org/data/2.5/",
 };
 

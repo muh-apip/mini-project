@@ -1,57 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { fetchWeather } from "../services/weatherService";
-import { FaCloudSun } from "react-icons/fa"; // Icon for weather from react-icons
+import React from "react";
+import { FaCloudSun } from "react-icons/fa"; // Icon
+import useTimeAndDate from "../hooks/useTimeAndDate";
+import useWeather from "../hooks/useWeather";
 
 function HeroSection() {
-  const [search, setSearch] = useState("");
-  const [weather, setWeather] = useState({});
-  const [currentTime, setCurrentTime] = useState("");
-  const [currentDate, setCurrentDate] = useState("");
-
-  // Function to fetch the current time and date without storing in localStorage
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const time = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }); // Removed seconds
-      const date = now.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-
-      setCurrentTime(time);
-      setCurrentDate(date);
-    }, 1000);
-
-    return () => clearInterval(interval); // Cleanup interval on unmount
-  }, []);
-
-  // Check if weather data is in localStorage when component mounts
-  useEffect(() => {
-    const savedWeather = localStorage.getItem("weatherData");
-    if (savedWeather) {
-      setWeather(JSON.parse(savedWeather)); // Set weather from localStorage if available
-    }
-  }, []);
-
-  // Function to handle weather search
-  const searchPressed = useCallback(async () => {
-    if (search) {
-      try {
-        const result = await fetchWeather(search); // Call fetchWeather from service
-        setWeather(result);
-        localStorage.setItem("weatherData", JSON.stringify(result)); // Save fetched weather data in localStorage
-        setSearch("");
-      } catch (error) {
-        console.error("Error during search:", error);
-        setWeather({});
-      }
-    }
-  }, [search]);
+  const { currentTime, currentDate } = useTimeAndDate();
+  const { search, setSearch, weather, searchWeather } = useWeather();
 
   return (
     <div className="bg-gradient-to-r from-blue-100 to-blue-300 min-h-screen text-black relative overflow-x-hidden">
@@ -67,7 +21,7 @@ function HeroSection() {
               onChange={(e) => setSearch(e.target.value)}
             />
             <button
-              onClick={searchPressed}
+              onClick={searchWeather}
               className="btn bg-blue-500 text-white px-4 py-2 rounded-r-2xl"
             >
               Search
