@@ -1,32 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { fetchActivities, addActivity, deleteActivity, updateActivity } from "../services/activityService"; // Impor fungsi dari service
+import React, { useState } from "react";
+import { useActivities } from "../hooks/useActivities";
 
 export default function ActivityPlanner() {
-  const [activities, setActivities] = useState([]); // Untuk menyimpan daftar aktivitas
-  const [loading, setLoading] = useState(false); // Untuk status loading
-  const [error, setError] = useState(null); // Untuk menangani error
-  const [isEditing, setIsEditing] = useState(false); // Status apakah sedang mengedit
-  const [editActivity, setEditActivity] = useState(null); // Aktivitas yang sedang diedit
+  const {
+    activities,
+    loading,
+    error,
+    addNewActivity,
+    deleteExistingActivity,
+    updateExistingActivity,
+  } = useActivities();
 
-  // Ambil data aktivitas dari API saat komponen pertama kali dimuat
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchActivities();
-        setActivities(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [isEditing, setIsEditing] = useState(false);
+  const [editActivity, setEditActivity] = useState(null);
 
-    fetchData();
-  }, []);
-
-  // Menambahkan aktivitas baru ke dalam API
-  const handleAddActivity = async (e) => {
+  const handleAddActivity = (e) => {
     e.preventDefault();
     const newActivity = {
       name: e.target.activityName.value,
@@ -34,34 +22,16 @@ export default function ActivityPlanner() {
       weather: e.target.idealWeather.value,
       duration: e.target.activityDuration.value,
     };
-
-    try {
-      const addedActivity = await addActivity(newActivity);
-      setActivities([...activities, addedActivity]); // Tambahkan aktivitas baru ke state
-      e.target.reset(); // Reset form setelah submit
-    } catch (err) {
-      setError(err.message);
-    }
+    addNewActivity(newActivity);
+    e.target.reset();
   };
 
-  // Menghapus aktivitas berdasarkan ID dari API
-  const handleDelete = async (id) => {
-    try {
-      await deleteActivity(id);
-      setActivities(activities.filter((activity) => activity.id !== id)); // Menghapus aktivitas dari state
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  // Menandai aktivitas untuk diedit
   const handleEdit = (activity) => {
     setIsEditing(true);
-    setEditActivity(activity); // Set aktivitas yang sedang diedit
+    setEditActivity(activity);
   };
 
-  // Menyimpan perubahan aktivitas yang sudah diedit
-  const handleUpdateActivity = async (e) => {
+  const handleUpdateActivity = (e) => {
     e.preventDefault();
     const updatedActivity = {
       name: e.target.activityName.value,
@@ -69,20 +39,14 @@ export default function ActivityPlanner() {
       weather: e.target.idealWeather.value,
       duration: e.target.activityDuration.value,
     };
+    updateExistingActivity(editActivity.id, updatedActivity);
+    setIsEditing(false);
+    setEditActivity(null);
+    e.target.reset();
+  };
 
-    try {
-      const updated = await updateActivity(editActivity.id, updatedActivity); // Mengupdate aktivitas di API
-      setActivities(
-        activities.map((activity) =>
-          activity.id === updated.id ? updated : activity
-        )
-      ); // Update state dengan data yang telah diperbarui
-      setIsEditing(false); // Set ke mode tidak mengedit
-      setEditActivity(null); // Reset data aktivitas yang sedang diedit
-      e.target.reset(); // Reset form setelah update
-    } catch (err) {
-      setError(err.message);
-    }
+  const handleDelete = (id) => {
+    deleteExistingActivity(id);
   };
 
   return (
@@ -97,10 +61,10 @@ export default function ActivityPlanner() {
         </div>
       )}
 
-      {/* Formulir Perencanaan Aktivitas Luar Ruangan */}
+      {/* Formulir */}
       <h2 className="text-2xl font-semibold text-gray-700 text-center mb-4">
-          {isEditing ? "Edit Rencana Aktivitas" : "Rencana Aktivitas"}
-        </h2>
+        {isEditing ? "Edit Rencana Aktivitas" : "Rencana Aktivitas"}
+      </h2>
       <div className="w-full max-w-4xl bg-base-200 p-8 rounded-lg shadow-lg">
         <form
           className="grid grid-cols-1 gap-6"
@@ -143,7 +107,9 @@ export default function ActivityPlanner() {
           </div>
 
           <div className="form-control">
-            <label className="label text-gray-700">Durasi Aktivitas (Jam):</label>
+            <label className="label text-gray-700">
+              Durasi Aktivitas (Jam):
+            </label>
             <input
               type="number"
               name="activityDuration"
@@ -193,9 +159,9 @@ export default function ActivityPlanner() {
                   </td>
                 </tr>
               ) : (
-                activities.map((activity) => (
+                activities.map((activity, index) => (
                   <tr key={activity.id}>
-                    <td>{activity.id}</td>
+                    <td>{index + 1}</td>
                     <td>{activity.name}</td>
                     <td>{activity.date}</td>
                     <td>{activity.weather}</td>
@@ -203,13 +169,13 @@ export default function ActivityPlanner() {
                     <td>
                       <button
                         className="btn btn-sm btn-primary mr-2"
-                        onClick={() => handleEdit(activity)} // Memilih aktivitas untuk diedit
+                        onClick={() => handleEdit(activity)}
                       >
                         Edit
                       </button>
                       <button
                         className="btn btn-sm btn-error"
-                        onClick={() => handleDelete(activity.id)} // Menghapus aktivitas berdasarkan ID
+                        onClick={() => handleDelete(activity.id)}
                       >
                         Delete
                       </button>
