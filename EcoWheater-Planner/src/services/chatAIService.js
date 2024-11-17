@@ -21,7 +21,7 @@ export async function getAIResponse(weather, userInput) {
     return `Currently, the weather in ${weather.name} is ${Math.round(weather.main.temp)}°C with ${weather.weather[0].description}.`;
   };
 
-  const basePrompt = "Halo, saya adalah Chat Wheater AI. Berikan saya beberapa rekomendasi aktivitas yang bisa saya lakukan hari ini, dengan mempertimbangkan cuaca";
+  const basePrompt = "Berikan saya beberapa rekomendasi aktivitas yang bisa saya lakukan hari ini, dengan mempertimbangkan cuaca";
   const weatherInfo = getWeatherInfo(); // Mendapatkan info cuaca
   const userPrompt = `${basePrompt} Cuaca: ${weatherInfo} Hobi: ${userInput}`;
 
