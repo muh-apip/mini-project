@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCloudSun } from "react-icons/fa"; // Icon
+import { FaCloudSun } from "react-icons/fa"; 
 import useTimeAndDate from "../hooks/useTimeAndDate";
 import useWeather from "../hooks/useWeather";
 
@@ -69,7 +69,6 @@ function HeroSection() {
                   </p>
                 </div>
 
-                {/* Combined Weather Information */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                   {/* High / Low */}
                   <div className="text-center">
