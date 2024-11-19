@@ -44,7 +44,7 @@ function ChatWeatherBot({ weather }) {
             value={inputUser}
             onChange={handleChange}
             className="flex-grow p-3 rounded-l-lg border focus:outline-none"
-            placeholder="Masukkan hobi Anda..."
+            placeholder="Masukkan cuaca saat ini..."
           />
           <button
             onClick={handlePromptSubmit}

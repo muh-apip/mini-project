@@ -13,6 +13,14 @@ export default function ActivityPlanner() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editActivity, setEditActivity] = useState(null);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+
+  const showTemporaryAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000); // 3 detik
+  };
 
   const handleAddActivity = (e) => {
     e.preventDefault();
@@ -23,6 +31,7 @@ export default function ActivityPlanner() {
       duration: e.target.activityDuration.value,
     };
     addNewActivity(newActivity);
+    showTemporaryAlert("Aktivitas berhasil ditambahkan!");
     e.target.reset();
   };
 
@@ -40,6 +49,7 @@ export default function ActivityPlanner() {
       duration: e.target.activityDuration.value,
     };
     updateExistingActivity(editActivity.id, updatedActivity);
+    showTemporaryAlert("Aktivitas berhasil diperbarui!");
     setIsEditing(false);
     setEditActivity(null);
     e.target.reset();
@@ -47,11 +57,20 @@ export default function ActivityPlanner() {
 
   const handleDelete = (id) => {
     deleteExistingActivity(id);
+    showTemporaryAlert("Aktivitas berhasil dihapus!");
   };
 
   return (
     <div className="flex justify-center items-center flex-col gap-6 p-8">
       {/* Alert Section */}
+      {showAlert && (
+        <div className="alert alert-success shadow-lg w-full max-w-4xl mb-6">
+          <div>
+            <h3 className="font-bold">Success!</h3>
+            <div>{alertMessage}</div>
+          </div>
+        </div>
+      )}
       {error && (
         <div className="alert alert-error shadow-lg w-full max-w-4xl mb-6">
           <div>
